@@ -22,10 +22,10 @@ def crawl_lazada(keyword):
   browser.get(f"{base_url}/catalog/?q={keyword}")
   soup = BeautifulSoup(browser.page_source, "html.parser")
   browser.implicitly_wait(100)
-  page_block = soup.find("div", class_="e5J1n")
-  page_list = page_block.find_all("li")
-  page_list.pop()
-  max_page = int(page_list.pop().string)
+  # page_block = soup.find("div", class_="e5J1n")
+  # page_list = page_block.find_all("li")
+  # page_list.pop()
+  # max_page = int(page_list.pop().string)
   
   for index in range(1):
       browser.get(f"{base_url}/catalog/?page={index + 1}&q={keyword}")
@@ -58,7 +58,6 @@ def crawl_lazada(keyword):
         price = int(price_part.text.strip().replace(".", "").replace("₫", "").replace(",", ""))
         
         product_data = {
-            "shop": "tiki",
             "thumbnail": thumbnail.replace(",", " "),
             "name": name.replace(",", " "),
             "price": price,

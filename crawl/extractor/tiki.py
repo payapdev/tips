@@ -25,10 +25,11 @@ def crawl_tiki(keyword):
   browser.implicitly_wait(100)
   page_block = soup.find("div", class_="pagination-block")
   page_list = page_block.find_all("li")
-  max_page = int(page_list.pop().string)
+  max_page = 1
+  # max_page = int(page_list.pop().string)
   
   for index in range(max_page):
-      browser.get(f"{base_url}/search?q={keyword}&page={index + 1}")
+      browser.get(f"{base_url}/search?q={keyword}")
       browser.implicitly_wait(100)
       browser.execute_script(f"window.scrollTo(0, {1 * scroll_height});")
       time.sleep(time_interval)
@@ -47,7 +48,7 @@ def crawl_tiki(keyword):
         
         thumbnail_part = item.find("div", class_="thumbnail")
         thumbnail_source = thumbnail_part.find("img")
-        thumbnail = thumbnail_source['src']
+        thumbnail = thumbnail_source['srcset'].split()[0]
         
         info_part = item.find("div", class_="info")
         name_part = info_part.find("div", class_="name")
@@ -57,7 +58,6 @@ def crawl_tiki(keyword):
         price = int(price_part.text.strip().replace(".", "").replace("₫", "").replace(",", ""))
         
         product_data = {
-            "shop": "tiki",
             "thumbnail": thumbnail.replace(",", " "),
             "name": name.replace(",", " "),
             "price": price,
@@ -65,7 +65,7 @@ def crawl_tiki(keyword):
         }
         
         results.append(product_data)
-        browser.get(f"{base_url}{link}")
+        # browser.get(f"{base_url}{link}")
         
         item_number = item_number + 1
         
