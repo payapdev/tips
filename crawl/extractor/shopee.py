@@ -3,7 +3,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
-from user_agent import generate_user_agent
 import time
 import requests
 
@@ -11,15 +10,12 @@ def crawl_shopee(keyword):
   results = []
   time_interval = 1.5
   scroll_height = 1000
-  item_number = 1  
-  
-  generate_user_agent(os=('mac', 'linux'), device_type='desktop')
+  item_number = 1
     
   options = Options()
   options.add_argument("--no-sandbox")
   options.add_argument("--disable-dev-shm-usage")
   options.add_argument("--disable-extensions")
-  options.add_argument(f"--user-agent={generate_user_agent(os=('mac', 'linux'), device_type='desktop')}")
   options.add_experimental_option("detach", True)
   
   browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)

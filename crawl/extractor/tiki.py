@@ -73,4 +73,37 @@ def crawl_tiki(keyword):
   browser.close()      
   return results
   
+def crawl_options(link):
+  options = Options()
+  options.add_argument("--no-sandbox")
+  options.add_argument("--disable-dev-shm-usage")
+  options.add_experimental_option("detach", True)
+  
+  browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+  
+  options_wrapper = {}
+  browser.get(f"{link}")
+  soup = BeautifulSoup(browser.page_source, "html.parser")
+  wrapper = soup.find('div', class_="styles__ProductOptionsWrapper-sc-18rzur4-0 jZCObm")
+  items = wrapper.find_all('div', class_="styles__VariantSelectWrapper-sc-1pikfxx-0 heEOGZ")
+  
+  for item in items:
+    option_name = item.find("p", class_="option-name").text.strip()
+    options_values = []
+    active_values = item.find_all("div", class_="styles__OptionButton-sc-1ts19ms-0 iuHuWV active")
+    inactive_values = item.find_all("div", class_="styles__OptionButton-sc-1ts19ms-0 iuHuWV")
+    
+    for value in active_values:
+      options_values.append(value.text.strip())
       
+    for value in inactive_values:
+      options_values.append(value.text.strip())
+    
+    options_wrapper[option_name] = options_values
+    
+  print(options_wrapper)
+  browser.close()
+    
+  return options_wrapper
+  
+crawl_options("https://tiki.vn/apple-iphone-15-pro-max-p271973414.html?spid=271973470")
