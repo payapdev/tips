@@ -21,18 +21,9 @@ def crawl_tiki(model, option_list):
   
   browser.get(f"{base_url}/search?q={model}")
   browser.implicitly_wait(100)
-  soup = BeautifulSoup(browser.page_source, "html.parser")
-  browser.implicitly_wait(100)
-  
-  browser.get(f"{base_url}/search?q={model}")
-  browser.implicitly_wait(100)
   browser.execute_script(f"window.scrollTo(0, {1 * scroll_height});")
   time.sleep(time_interval)
   browser.execute_script(f"window.scrollTo({1 * scroll_height}, {2 * scroll_height});")
-  time.sleep(time_interval)
-  browser.execute_script(f"window.scrollTo({2 * scroll_height}, {3 * scroll_height});")
-  time.sleep(time_interval)
-  browser.execute_script(f"window.scrollTo({3 * scroll_height}, document.body.scrollHeight);")
   time.sleep(time_interval)
     
   soup = BeautifulSoup(browser.page_source, "html.parser")
@@ -52,7 +43,11 @@ def crawl_tiki(model, option_list):
     price_part = info_part.find("div", class_="price-discount__price")
     price = int(price_part.text.strip().replace(".", "").replace("₫", "").replace(",", ""))
     
-    option = find_matching_option(name, option_list)
+    if len(option_list) > 0:
+      option = find_matching_option(name, option_list)
+    else:
+      option = []  
+    
     
     product_data = {
         "thumbnail": thumbnail.replace(",", " "),
