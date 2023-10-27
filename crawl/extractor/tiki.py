@@ -1,21 +1,60 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time
+import random
+
+def generate_random_headers():
+    user_agents = [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/100.0.4896.85 Mobile/15E148 Safari/604.1"
+    ]
+    
+    accept_languages = ['en-US', 'en-GB', 'es-ES', 'fr-FR']
+    referer_sites = [
+        'https://www.google.com/', 
+        'https://www.facebook.com/', 
+        'https://www.youtube.com/'
+        ]
+
+    headers = {
+        "User-Agent": random.choice(user_agents),
+        "Accept-Language": random.choice(accept_languages),
+        "Referer": random.choice(referer_sites)
+    }
+    
+    return headers
 
 def crawl_tiki(model, option_list):
   options = Options()
+  
+  # 랜덤 헤더 생성
+  headers = generate_random_headers()
+  
+  # User-Agent, Accept-Language, Referer 설정
+  options.add_argument(f"user-agent={headers['User-Agent']}")
+  options.add_argument(f"lang={headers['Accept-Language']}")
+  options.add_argument(f"referer={headers['Referer']}")
+  
   options.add_argument("--no-sandbox")
   options.add_argument("--disable-dev-shm-usage")
+  options.add_argument("--headless")
   options.add_experimental_option("detach", True)
   
   browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
   
   base_url = "https://tiki.vn"
   results = []
-  time_interval = 1.5
+  time_interval = round(random.uniform(0, 5), 2)
   scroll_height = 800
   item_number = 1
   

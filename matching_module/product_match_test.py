@@ -3,6 +3,7 @@ import pandas as pd
 from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score
 from siamese_shopee_train import SiameseModel, SiameseNetworkDataset, get_valid_transforms
+from tqdm import tqdm
 
 DIM = (512, 512)
 
@@ -39,6 +40,9 @@ predicted_labels = []
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
+# Create a TQDM progress bar
+pbar = tqdm(total=len(test_loader), desc="Testing", dynamic_ncols=True, position=0)
+
 # Iterate through the test data
 for img_0, img_1, title_1, title_2, label in test_loader:
     img_0 = img_0.to(device)
@@ -52,10 +56,14 @@ for img_0, img_1, title_1, title_2, label in test_loader:
     # Calculate predicted labels
     predicted_labels.extend((output_1 - output_2).cpu().numpy())
     true_labels.extend(label.cpu().numpy())
+    
+    pbar.update(1)  # Update the progress bar
+
+pbar.close()  # Close the progress bar
 
 # Convert predicted labels to binary (0 or 1) based on a threshold
 threshold = 0.5
-predicted_labels = [1 if pred > threshold else 0 for pred in predicted_labels]
+predicted_labels = [1 if pred > threshold else 0 for pred in predicted_labels.tolist()]
 
 # Calculate accuracy
 accuracy = accuracy_score(true_labels, predicted_labels)
